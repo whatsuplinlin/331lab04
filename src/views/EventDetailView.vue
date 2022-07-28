@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import EventService from '@/services/EventService'
+import EventService from '@/services/EventService.js'
+import { watchEffect } from '@vue/runtime-core'
 export default {
   props: ['id'],
   data() {
@@ -16,13 +17,15 @@ export default {
     }
   },
   created() {
-    EventService.getEvent(this.id)
-      .then((response) => {
-        this.event = response.data
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    watchEffect(() => {
+      EventService.getEvents(2, this.page)
+        .then((response) => {
+          this.events = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
   }
 }
 </script>

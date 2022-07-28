@@ -6,7 +6,8 @@ const routes = [
   {
     path: '/',
     name: 'EventList',
-    component: EventListView
+    component: EventListView,
+    props: (route) => ({ page: parseInt(route.query.page) || 1 })
   },
   {
     path: '/about',
