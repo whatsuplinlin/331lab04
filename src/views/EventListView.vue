@@ -18,7 +18,7 @@
     </div>
     <div class="pagination">
       <router-link
-        id="page-next" 
+        id="page-next"
         :to="{ name: 'EventList', query: { page: page + 1 } }"
         rel="next"
         v-if="hasNextPage"
