@@ -15,12 +15,13 @@
       >
         Prev Page</router-link
       >
-
+    </div>
+    <div class="pagination">
       <router-link
-        id="page-next"
+        id="page-next" 
         :to="{ name: 'EventList', query: { page: page + 1 } }"
         rel="next"
-        v-if="hasNextpage"
+        v-if="hasNextPage"
       >
         Next Page</router-link
       >
@@ -29,13 +30,17 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import EventCard from '@/components/EventCard.vue'
 import EventService from '@/services/EventService.js'
+import { watchEffect } from '@vue/runtime-core'
 export default {
   name: 'EventListView',
   props: {
     page: {
+      type: Number,
+      required: true
+    },
+    perPage: {
       type: Number,
       required: true
     }
@@ -46,25 +51,27 @@ export default {
   data() {
     return {
       events: null,
-      totalEvents: 0 // <--- Added this to store totalEvents
+      totalEvents: 0 //<--- Added this to store totalEvents
     }
   },
   created() {
-    EventService.getEvents(2, this.page)
-      .then((response) => {
-        this.events = response.data
-        this.totalEvents = response.headers['x-total-count'] // <--- Store it
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    watchEffect(() => {
+      EventService.getEvents(this.perPage, this.page)
+        .then((response) => {
+          this.events = response.data
+          this.totalEvents = response.headers['x-total-count'] //<--- Store it
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
   },
   computed: {
-    hasNextpage() {
-      // First, calculate total pages
-      let totalPages = Math.ceil(this.totalEvents / 2) // 2 is events per page
+    hasNextPage() {
+      //First, calculate total pages
+      let totalPages = Math.ceil(this.totalEvents / this.perPage) // 2 is events per page
 
-      // Then check to see if the current page is less than the totla pages.
+      //Then check to see if the current page is less than the total pages
       return this.page < totalPages
     }
   }
@@ -75,5 +82,24 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.pagination {
+  display: flex;
+  width: 290px;
+}
+
+.pagination a {
+  flex: 1;
+  text-decoration: none;
+  color: #2c3e50;
+}
+
+#page-prev {
+  text-align: left;
+}
+
+#page-next {
+  text-align: right;
 }
 </style>
